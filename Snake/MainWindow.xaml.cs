@@ -28,6 +28,8 @@ namespace Snake
         List<PositionedEntity> snake;
         // яблоко
         Apple apple;
+        // банан
+        Banan banan;
         //количество очков
         int score;
         //таймер по которому 
@@ -62,7 +64,11 @@ namespace Snake
             //обновляем положение яблока
             Canvas.SetTop(apple.image, apple.y);
             Canvas.SetLeft(apple.image, apple.x);
-            
+
+            //обновляем положение банана
+            Canvas.SetTop(banan.image, banan.y);
+            Canvas.SetLeft(banan.image, banan.x);
+
             //обновляем количество очков
             lblScore.Content = String.Format("{0}000", score);
         }
@@ -151,6 +157,9 @@ namespace Snake
             // создаем новое яблоко и добавлем его
             apple = new Apple(snake);
             canvas1.Children.Add(apple.image);
+            // создаем новое яблоко и добавлем его
+            banan = new Banan(snake);
+            canvas1.Children.Add(banan.image);
             // создаем голову
             head = new Head();
             snake.Add(head);
@@ -176,7 +185,6 @@ namespace Snake
                 m_image.Source = (new ImageSourceConverter()).ConvertFromString(image) as ImageSource;
                 m_image.Width = w;
                 m_image.Height = h;
-
             }
 
             public Image image
@@ -231,6 +239,39 @@ namespace Snake
             List<PositionedEntity> m_snake;
             public Apple(List<PositionedEntity> s)
                 : base(0, 0, 40, 40, "pack://application:,,,/Resources/fruit.png")
+            {
+                m_snake = s;
+                move();
+            }
+
+            public override void move()
+            {
+                Random rand = new Random();
+                do
+                {
+                    x = rand.Next(13) * 40 + 40;
+                    y = rand.Next(13) * 40 + 40;
+                    bool overlap = false;
+                    foreach (var p in m_snake)
+                    {
+                        if (p.x == x && p.y == y)
+                        {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    if (!overlap)
+                        break;
+                } while (true);
+
+            }
+        }
+
+        public class Banan : PositionedEntity
+        {
+            List<PositionedEntity> m_snake;
+            public Banan(List<PositionedEntity> s)
+                : base(0, 0, 40, 40, "pack://application:,,,/Resources/banan.png")
             {
                 m_snake = s;
                 move();
