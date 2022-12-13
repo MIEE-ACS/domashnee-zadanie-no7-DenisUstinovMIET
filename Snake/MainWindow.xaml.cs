@@ -30,6 +30,10 @@ namespace Snake
         Apple apple;
         // банан
         Banan banan;
+        // Огурец
+        Cucumber cucumber;
+        // Огурчик-Рик
+        Cucumber_Rick cucumber_rick;
         //количество очков
         int score;
         //таймер по которому 
@@ -47,8 +51,7 @@ namespace Snake
             //создаем таймер срабатывающий раз в 300 мс
             moveTimer = new DispatcherTimer();
             moveTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
-            moveTimer.Tick += new EventHandler(moveTimer_Tick);
-            
+            moveTimer.Tick += new EventHandler(moveTimer_Tick);  
         }
 
         //метод перерисовывающий экран
@@ -68,6 +71,14 @@ namespace Snake
             //обновляем положение банана
             Canvas.SetTop(banan.image, banan.y);
             Canvas.SetLeft(banan.image, banan.x);
+
+            //обновляем положение огурца
+            Canvas.SetTop(cucumber.image, cucumber.y);
+            Canvas.SetLeft(cucumber.image, cucumber.x);
+
+            //обновляем положение огурчика-Рика
+            Canvas.SetTop(cucumber_rick.image, cucumber_rick.y);
+            Canvas.SetLeft(cucumber_rick.image, cucumber_rick.x);
 
             //обновляем количество очков
             lblScore.Content = String.Format("{0}000", score);
@@ -116,6 +127,45 @@ namespace Snake
                 canvas1.Children.Add(part.image);
                 snake.Add(part);
             }
+
+            //проверяем, что голова змеи врезалась в банан
+            if (head.x == banan.x && head.y == banan.y)
+            {
+                //увеличиваем счет
+                score++;
+                //двигаем яблоко на новое место
+                banan.move();
+                // добавляем новый сегмент к змее
+                var part = new BodyPart(snake.Last());
+                canvas1.Children.Add(part.image);
+                snake.Add(part);
+            }
+            
+            //проверяем, что голова змеи врезалась в огурец
+            if (head.x == cucumber.x && head.y == cucumber.y)
+            {
+                //увеличиваем счет
+                score = score + 5;
+                //двигаем огурец на новое место
+                cucumber.move();
+                // добавляем новый сегмент к змее
+                var part = new BodyPart(snake.Last());
+                canvas1.Children.Add(part.image);
+                snake.Add(part);
+            }
+
+            //проверяем, что голова змеи врезалась в огурчика-Рика
+            if (head.x == cucumber_rick.x && head.y == cucumber_rick.y)
+            {
+                //увеличиваем счет
+                score = score + 10;
+                //двигаем огурчика-Рика на новое место
+                cucumber_rick.move();
+                // добавляем новый сегмент к змее
+                var part = new BodyPart(snake.Last());
+                canvas1.Children.Add(part.image);
+                snake.Add(part);
+            }
             //перерисовываем экран
             UpdateField();
         }
@@ -157,9 +207,15 @@ namespace Snake
             // создаем новое яблоко и добавлем его
             apple = new Apple(snake);
             canvas1.Children.Add(apple.image);
-            // создаем новое яблоко и добавлем его
+            // создаем новый банан и добавлем его
             banan = new Banan(snake);
             canvas1.Children.Add(banan.image);
+            // создаем новый огурец и добавлем его
+            cucumber = new Cucumber(snake);
+            canvas1.Children.Add(cucumber.image);
+            // создаем нового огурчика-Рика и добавлем его
+            cucumber_rick = new Cucumber_Rick(snake);
+            canvas1.Children.Add(cucumber_rick.image);
             // создаем голову
             head = new Head();
             snake.Add(head);
@@ -272,6 +328,72 @@ namespace Snake
             List<PositionedEntity> m_snake;
             public Banan(List<PositionedEntity> s)
                 : base(0, 0, 40, 40, "pack://application:,,,/Resources/banan.png")
+            {
+                m_snake = s;
+                move();
+            }
+
+            public override void move()
+            {
+                Random rand = new Random();
+                do
+                {
+                    x = rand.Next(13) * 40 + 40;
+                    y = rand.Next(13) * 40 + 40;
+                    bool overlap = false;
+                    foreach (var p in m_snake)
+                    {
+                        if (p.x == x && p.y == y)
+                        {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    if (!overlap)
+                        break;
+                } while (true);
+
+            }
+        }
+
+        public class Cucumber : PositionedEntity
+        {
+            List<PositionedEntity> m_snake;
+            public Cucumber(List<PositionedEntity> s)
+                : base(0, 0, 40, 40, "pack://application:,,,/Resources/cucumber.png")
+            {
+                m_snake = s;
+                move();
+            }
+
+            public override void move()
+            {
+                Random rand = new Random();
+                do
+                {
+                    x = rand.Next(13) * 40 + 40;
+                    y = rand.Next(13) * 40 + 40;
+                    bool overlap = false;
+                    foreach (var p in m_snake)
+                    {
+                        if (p.x == x && p.y == y)
+                        {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    if (!overlap)
+                        break;
+                } while (true);
+
+            }
+        }
+
+        public class Cucumber_Rick : PositionedEntity
+        {
+            List<PositionedEntity> m_snake;
+            public Cucumber_Rick(List<PositionedEntity> s)
+                : base(0, 0, 40, 40, "pack://application:,,,/Resources/cucumber_rick.png")
             {
                 m_snake = s;
                 move();

@@ -93,6 +93,26 @@ namespace Snake {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cucumber {
+            get {
+                object obj = ResourceManager.GetObject("cucumber", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cucumber_rick {
+            get {
+                object obj = ResourceManager.GetObject("cucumber_rick", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap fruit {
             get {
                 object obj = ResourceManager.GetObject("fruit", resourceCulture);
