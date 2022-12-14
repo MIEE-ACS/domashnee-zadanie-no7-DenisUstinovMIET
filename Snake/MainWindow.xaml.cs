@@ -50,7 +50,7 @@ namespace Snake
             //создаем поле 300х300 пикселей
             field = new Entity(600, 600, "pack://application:,,,/Resources/snake.png");
 
-            //создаем таймер срабатывающий раз в 300 мс
+            //создаем таймер срабатывающий раз в 10 с
             moveTimer2 = new DispatcherTimer();
             moveTimer2.Interval = new TimeSpan(0, 0, 0, 0, 10000);
             moveTimer2.Tick += new EventHandler(moveTimer_Tick2);
