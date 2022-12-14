@@ -38,20 +38,27 @@ namespace Snake
         int score;
         //таймер по которому 
         DispatcherTimer moveTimer;
-        
+        //таймер по которому 
+        DispatcherTimer moveTimer2;
+
         //конструктор формы, выполняется при запуске программы
         public MainWindow()
         {
             InitializeComponent();
-            
+
             snake = new List<PositionedEntity>();
             //создаем поле 300х300 пикселей
             field = new Entity(600, 600, "pack://application:,,,/Resources/snake.png");
 
             //создаем таймер срабатывающий раз в 300 мс
+            moveTimer2 = new DispatcherTimer();
+            moveTimer2.Interval = new TimeSpan(0, 0, 0, 0, 10000);
+            moveTimer2.Tick += new EventHandler(moveTimer_Tick2);
+
+            //создаем таймер срабатывающий раз в 300 мс
             moveTimer = new DispatcherTimer();
             moveTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
-            moveTimer.Tick += new EventHandler(moveTimer_Tick);  
+            moveTimer.Tick += new EventHandler(moveTimer_Tick);
         }
 
         //метод перерисовывающий экран
@@ -67,7 +74,7 @@ namespace Snake
             //обновляем положение яблока
             Canvas.SetTop(apple.image, apple.y);
             Canvas.SetLeft(apple.image, apple.x);
-
+            /*
             //обновляем положение банана
             Canvas.SetTop(banan.image, banan.y);
             Canvas.SetLeft(banan.image, banan.x);
@@ -79,9 +86,63 @@ namespace Snake
             //обновляем положение огурчика-Рика
             Canvas.SetTop(cucumber_rick.image, cucumber_rick.y);
             Canvas.SetLeft(cucumber_rick.image, cucumber_rick.x);
-
+            */
             //обновляем количество очков
             lblScore.Content = String.Format("{0}000", score);
+        }
+
+        int key = 1;
+
+        void moveTimer_Tick2(object sender, EventArgs e)
+        {
+            switch (key)
+            {
+                case 0:
+                    key = 1;
+                    break;
+                case 1: // создаем новый банан и добавлем его
+                    banan = new Banan(snake);
+                    canvas1.Children.Add(banan.image);
+                    //обновляем положение банана
+                    Canvas.SetTop(banan.image, banan.y);
+                    Canvas.SetLeft(banan.image, banan.x);
+                    key = 2;
+                    break;
+                case 2: //Удаляем банан
+                    banan.x = 0;
+                    banan.y = 0;
+                    canvas1.Children.Remove(banan.image);                   
+                    key = 3;
+                    break;
+                case 3:// создаем новый огурец и добавлем его
+                    cucumber = new Cucumber(snake);
+                    canvas1.Children.Add(cucumber.image);
+                    //обновляем положение огурца
+                    Canvas.SetTop(cucumber.image, cucumber.y);
+                    Canvas.SetLeft(cucumber.image, cucumber.x);
+                    key = 4;
+                    break;
+                case 4: //Удаляем огурчик
+                    cucumber.x = 0;
+                    cucumber.y = 0;
+                    canvas1.Children.Remove(cucumber.image);
+                    key = 5;
+                    break;
+                case 5: // создаем нового огурчика-Рика и добавлем его
+                    cucumber_rick = new Cucumber_Rick(snake);
+                    canvas1.Children.Add(cucumber_rick.image);
+                    //обновляем положение огурчика-Рика
+                    Canvas.SetTop(cucumber_rick.image, cucumber_rick.y);
+                    Canvas.SetLeft(cucumber_rick.image, cucumber_rick.x);
+                    key = 6;
+                    break;
+                case 6: //Удаляем огурчика-Рика
+                    cucumber_rick.x = 0;
+                    cucumber_rick.y = 0;
+                    canvas1.Children.Remove(cucumber_rick.image);
+                    key = 1;
+                    break;
+            }
         }
 
         //обработчик тика таймера. Все движение происходит здесь
@@ -101,6 +162,7 @@ namespace Snake
                 {
                     //мы проиграли
                     moveTimer.Stop();
+                    moveTimer2.Stop();
                     tbGameOver.Visibility = Visibility.Visible;
                     return;
                 }
@@ -111,6 +173,7 @@ namespace Snake
             {
                 //мы проиграли
                 moveTimer.Stop();
+                moveTimer2.Stop();
                 tbGameOver.Visibility = Visibility.Visible;
                 return;
             }
@@ -128,44 +191,64 @@ namespace Snake
                 snake.Add(part);
             }
 
+
             //проверяем, что голова змеи врезалась в банан
-            if (head.x == banan.x && head.y == banan.y)
-            {
-                //увеличиваем счет
-                score++;
-                //двигаем яблоко на новое место
-                banan.move();
-                // добавляем новый сегмент к змее
-                var part = new BodyPart(snake.Last());
-                canvas1.Children.Add(part.image);
-                snake.Add(part);
-            }
-            
+            if (banan != null)
+                if (head.x == banan.x && head.y == banan.y)
+                {
+                    //увеличиваем счет
+                    score++;
+                    //двигаем банан на новое место
+                    //banan.move();
+                    // добавляем новый сегмент к змее
+                    var part = new BodyPart(snake.Last());
+                    canvas1.Children.Add(part.image);
+                    snake.Add(part);
+                    //Удаляем банан
+                    banan.x = 0;
+                    banan.y = 0;
+                    canvas1.Children.Remove(banan.image);                   
+                    key = 3;
+                }
+
             //проверяем, что голова змеи врезалась в огурец
-            if (head.x == cucumber.x && head.y == cucumber.y)
-            {
-                //увеличиваем счет
-                score = score + 5;
-                //двигаем огурец на новое место
-                cucumber.move();
-                // добавляем новый сегмент к змее
-                var part = new BodyPart(snake.Last());
-                canvas1.Children.Add(part.image);
-                snake.Add(part);
-            }
+            if (cucumber != null)
+                if (head.x == cucumber.x && head.y == cucumber.y)
+                {
+                    //увеличиваем счет
+                    score = score + 5;
+                    //двигаем огурец на новое место
+                    cucumber.move();
+                    // добавляем новый сегмент к змее
+                    var part = new BodyPart(snake.Last());
+                    canvas1.Children.Add(part.image);
+                    snake.Add(part);
+                    //Удаляем огурчик
+                    cucumber.x = 0;
+                    cucumber.y = 0;
+                    canvas1.Children.Remove(cucumber.image);
+                    key = 5;
+                }
 
             //проверяем, что голова змеи врезалась в огурчика-Рика
-            if (head.x == cucumber_rick.x && head.y == cucumber_rick.y)
-            {
-                //увеличиваем счет
-                score = score + 10;
-                //двигаем огурчика-Рика на новое место
-                cucumber_rick.move();
-                // добавляем новый сегмент к змее
-                var part = new BodyPart(snake.Last());
-                canvas1.Children.Add(part.image);
-                snake.Add(part);
-            }
+            if (cucumber_rick != null)
+                if (head.x == cucumber_rick.x && head.y == cucumber_rick.y)
+                {
+                    //увеличиваем счет
+                    score = score + 10;
+                    //двигаем огурчика-Рика на новое место
+                    cucumber_rick.move();
+                    // добавляем новый сегмент к змее
+                    var part = new BodyPart(snake.Last());
+                    canvas1.Children.Add(part.image);
+                    snake.Add(part);
+                    key = 1;
+                    //Удаляем огурчика-Рика
+                    cucumber_rick.x = 0;
+                    cucumber_rick.y = 0;
+                    canvas1.Children.Remove(cucumber_rick.image);
+                }
+
             //перерисовываем экран
             UpdateField();
         }
@@ -193,6 +276,7 @@ namespace Snake
         // Обработчик нажатия кнопки "Start"
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            
             // обнуляем счет
             score = 0;
             // обнуляем змею
@@ -207,15 +291,7 @@ namespace Snake
             // создаем новое яблоко и добавлем его
             apple = new Apple(snake);
             canvas1.Children.Add(apple.image);
-            // создаем новый банан и добавлем его
-            banan = new Banan(snake);
-            canvas1.Children.Add(banan.image);
-            // создаем новый огурец и добавлем его
-            cucumber = new Cucumber(snake);
-            canvas1.Children.Add(cucumber.image);
-            // создаем нового огурчика-Рика и добавлем его
-            cucumber_rick = new Cucumber_Rick(snake);
-            canvas1.Children.Add(cucumber_rick.image);
+
             // создаем голову
             head = new Head();
             snake.Add(head);
@@ -223,8 +299,9 @@ namespace Snake
             
             //запускаем таймер
             moveTimer.Start();
+            moveTimer2.Start();
             UpdateField();
-
+            key = 1;
         }
         
         public class Entity
@@ -335,7 +412,7 @@ namespace Snake
 
             public override void move()
             {
-                Random rand = new Random();
+                Random rand = new Random(DateTime.Now.Second);
                 do
                 {
                     x = rand.Next(13) * 40 + 40;
@@ -352,7 +429,6 @@ namespace Snake
                     if (!overlap)
                         break;
                 } while (true);
-
             }
         }
 
@@ -368,7 +444,7 @@ namespace Snake
 
             public override void move()
             {
-                Random rand = new Random();
+                Random rand = new Random(DateTime.Now.Minute);
                 do
                 {
                     x = rand.Next(13) * 40 + 40;
@@ -401,7 +477,7 @@ namespace Snake
 
             public override void move()
             {
-                Random rand = new Random();
+                Random rand = new Random(DateTime.Now.Millisecond);
                 do
                 {
                     x = rand.Next(13) * 40 + 40;
@@ -418,7 +494,6 @@ namespace Snake
                     if (!overlap)
                         break;
                 } while (true);
-
             }
         }
 
